@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cerdas Cermat Juara Kelas 5 & 6</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:18px;font-family:Arial;background:#f3f0ff;color:#25204b}
+.app{max-width:800px;margin:auto}
+.hero{background:linear-gradient(130deg,#4338ca,#9333ea,#db2777);color:white;text-align:center;padding:25px;border-radius:22px}
+.hero h1{font-size:30px;margin:10px 0}
+.panel{background:white;padding:18px;border-radius:16px;margin-top:14px;box-shadow:0 3px 12px #0001}
+button{padding:13px;border:0;border-radius:11px;font-weight:bold;cursor:pointer}
+.primary{background:#5b48db;color:white}
+.secondary{background:#eeeafa;color:#332b65}
+.full{width:100%;margin-top:10px}
+input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;margin:8px 0 14px;font-size:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:9px;text-align:center}
+.subjects div{background:#f0edff;padding:14px;border-radius:12px}
+.stats{display:flex;gap:8px;margin-top:12px}
+.stat{flex:1;background:#eeeaff;padding:12px;text-align:center;border-radius:12px}
+.stat b{display:block;font-size:22px}
+.option{width:100%;text-align:left;background:white;border:2px solid #ddd;margin-top:9px;color:#25204b}
+.option.selected{background:#ede9fe;border-color:#7049e8}
+.hidden{display:none!important}
+.bar{height:9px;background:#eee;border-radius:20px;margin:12px 0;overflow:hidden}
+.bar div{height:100%;background:#8b5cf6}
+.numbers{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.num{background:#eeeaff}
+.num.done{background:#16a34a;color:white}
+.num.current{background:#7049e8;color:white}
+.muted{color:#777}
+.feedback{padding:12px;border-radius:10px;margin-top:12px;font-size:14px}
+.rank{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee}
+@media(min-width:600px){.numbers{grid-template-columns:repeat(10,1fr)}}
+</style>
+</head>
+<body>
+<main class="app">
+
+<section id="home">
+ <div class="hero">
+  <div style="font-size:48px">🏆📚⭐</div>
+  <h1>CERDAS CERMAT</h1>
+  <b>JUARA KELAS 5 & 6</b>
+  <p>Asah Pengetahuan, Raih Prestasi!</p>
+ </div>
+ <div class="panel">
+  <h2 style="text-align:center">🎓 Selamat Datang!</h2>
+  <label>Nama Peserta</label>
+  <input id="name" placeholder="Masukkan nama lengkap">
+  <label>Pilih Kelas</label>
+  <select id="grade">
+   <option value="5">Kelas 5</option>
+   <option value="6">Kelas 6</option>
+  </select>
+  <button class="primary full" onclick="start()">🚀 MULAI PERMAINAN</button>
+ </div>
+ <div class="grid">
+  <button class="secondary" onclick="show('rules')">📖 Petunjuk</button>
+  <button class="secondary" onclick="ranking()">🏆 Peringkat</button>
+ </div>
+ <div class="panel">
+  <h3 style="text-align:center">📚 Mata Pelajaran</h3>
+  <div class="subjects">
+   <div>➗<br>Matematika</div>
+   <div>📝<br>Bahasa Indonesia</div>
+   <div>🌱<br>IPAS</div>
+   <div>🇮🇩<br>Pancasila</div>
+   <div>🔤<br>Bahasa Inggris</div>
+  </div>
+  <p class="muted" style="text-align:center">30 Soal • 300 Poin Maksimal</p>
+ </div>
+</section>
+
+<section id="rules" class="panel hidden">
+ <h2>📖 Petunjuk Permainan</h2>
+ <ol>
+  <li>Masukkan nama dan kelas.</li>
+  <li>Kerjakan 30 soal pilihan ganda.</li>
+  <li>Klik langsung pilihan jawaban.</li>
+  <li>Gunakan tombol sebelumnya dan selanjutnya.</li>
+  <li>Setiap jawaban benar bernilai 10 poin.</li>
+  <li>Semua soal harus dijawab.</li>
+  <li>Lihat hasil dan papan peringkat setelah selesai.</li>
+ </ol>
+ <button class="primary full" onclick="show('home')">⬅ KEMBALI</button>
+</section>
+
+<section id="game" class="hidden">
+ <div class="grid">
+  <button class="secondary" onclick="show('home')">⬅ MENU</button>
+  <div class="panel" style="margin:0;text-align:center" id="subject"></div>
+ </div>
+ <div class="bar"><div id="progress"></div></div>
+ <div class="stats">
+  <div class="stat">SKOR<b id="score">0</b></div>
+  <div class="stat">BENAR<b id="correct">0</b></div>
+  <div class="stat">KELAS<b id="classDisplay">5</b></div>
+ </div>
+ <div class="panel">
+  <p id="category" class="muted"></p>
+  <h3 id="number"></h3>
+  <h3 id="question"></h3>
+  <div id="options"></div>
+  <div id="feedback" class="feedback hidden"></div>
+ </div>
+ <div class="grid">
+  <button class="secondary" id="prev" onclick="previous()">⬅ SEBELUMNYA</button>
+  <button class="primary" id="next" onclick="next()">SELANJUTNYA ➜</button>
+ </div>
+ <div class="panel">
+  <b>Nomor Soal</b>
+  <div class="numbers" id="numbers" style="margin-top:12px"></div>
+ </div>
+</section>
+
+<section id="result" class="hidden">
+ <div class="hero">
+  <div style="font-size:50px">🏆</div>
+  <h1>HASIL PERMAINAN</h1>
+  <p id="resultName"></p>
+  <div id="finalScore" style="font-size:55px;font-weight:bold">0</div>
+  <b>TOTAL NILAI</b>
+ </div>
+ <div class="stats">
+  <div class="stat">BENAR<b id="finalCorrect"></b></div>
+  <div class="stat">SALAH<b id="finalWrong"></b></div>
+  <div class="stat">NILAI<b id="percent"></b></div>
+ </div>
+ <div class="panel">
+  <h3>📊 Nilai Per Mata Pelajaran</h3>
+  <div id="results"></div>
+ </div>
+ <button class="primary full" onclick="ranking()">🏆 LIHAT PERINGKAT</button>
+ <button class="secondary full" onclick="show('home')">⬅ MENU UTAMA</button>
+</section>
+
+<section id="rankPage" class="hidden">
+ <div class="hero">
+  <div style="font-size:48px">🏆</div>
+  <h1>PAPAN PERINGKAT</h1>
+ </div>
+ <div class="panel" id="rankList"></div>
+ <button class="secondary full" onclick="show('home')">⬅ KEMBALI</button>
+</section>
+</main>
+
+<script>
+const subjects=[
+'Matematika','Bahasa Indonesia','IPAS',
+'Pendidikan Pancasila','Bahasa Inggris'
+];
+
+const data=[
+[0,5,'Hasil 2.450 + 1.375 adalah ....',['3.725','3.825','3.925','4.025'],1,'2.450 + 1.375 = 3.825.'],
+[0,5,'Hasil 3/4 + 1/4 adalah ....',['1/2','3/4','1','2'],2,'Hasilnya 4/4 = 1.'],
+[0,5,'Keliling persegi dengan sisi 12 cm adalah ....',['24 cm','36 cm','48 cm','144 cm'],2,'4 × 12 = 48 cm.'],
+[0,5,'FPB dari 24 dan 36 adalah ....',['6','8','12','18'],2,'FPB adalah 12.'],
+[0,6,'25% dari 240 adalah ....',['40','50','60','80'],2,'25% × 240 = 60.'],
+[0,6,'Volume kubus dengan rusuk 5 cm adalah ....',['25 cm³','75 cm³','100 cm³','125 cm³'],3,'5 × 5 × 5 = 125 cm³.'],
+[1,5,'Gagasan utama paragraf disebut ....',['Kalimat penjelas','Ide pokok','Judul','Kesimpulan'],1,'Ide pokok adalah gagasan utama.'],
+[1,5,'Antonim kata hemat adalah ....',['Rajin','Cermat','Boros','Teliti'],2,'Antonim hemat adalah boros.'],
+[1,5,'Kalimat tanya yang benar adalah ....',['Ibu memasak?','Di mana rumahmu?','Wah indah!','Ayo belajar!'],1,'Kalimat tanya menggunakan tanda tanya.'],
+[1,5,'Tokoh baik dalam cerita disebut ....',['Antagonis','Protagonis','Figuran','Narator'],1,'Protagonis adalah tokoh utama yang umumnya baik.'],
+[1,6,'Ringkasan teks memuat ....',['Semua kalimat','Pokok informasi','Pendapat saja','Cerita tambahan'],1,'Ringkasan memuat inti informasi.'],
+[1,6,'Kalimat efektif adalah kalimat yang ....',['Bertele-tele','Sulit dipahami','Jelas dan hemat kata','Selalu panjang'],2,'Kalimat efektif jelas dan tepat.'],
+[2,5,'Organ yang memompa darah adalah ....',['Paru-paru','Jantung','Ginjal','Lambung'],1,'Jantung memompa darah.'],
+[2,5,'Cair menjadi gas disebut ....',['Membeku','Mencair','Menguap','Mengembun'],2,'Menguap adalah cair menjadi gas.'],
+[2,5,'Planet merah adalah ....',['Venus','Mars','Jupiter','Saturnus'],1,'Mars dikenal sebagai planet merah.'],
+[2,5,'Sumber energi utama Bumi adalah ....',['Bulan','Matahari','Angin','Batu bara'],1,'Matahari sumber energi utama.'],
+[2,6,'Proses tumbuhan membuat makanan disebut ....',['Respirasi','Fotosintesis','Adaptasi','Evaporasi'],1,'Tumbuhan melakukan fotosintesis.'],
+[2,6,'Perputaran Bumi pada porosnya disebut ....',['Revolusi','Rotasi','Gravitasi','Orbit'],1,'Rotasi menyebabkan siang dan malam.'],
+[3,5,'Dasar negara Indonesia adalah ....',['UUD 1945','Pancasila','Bhinneka Tunggal Ika','Proklamasi'],1,'Pancasila adalah dasar negara.'],
+[3,5,'Lambang sila ketiga adalah ....',['Bintang','Rantai','Pohon beringin','Kepala banteng'],2,'Pohon beringin melambangkan persatuan.'],
+[3,5,'Contoh gotong royong adalah ....',['Menyontek','Membersihkan kelas bersama','Bertengkar','Membuang sampah'],1,'Gotong royong dilakukan bersama.'],
+[3,5,'Semboyan bangsa Indonesia adalah ....',['Tut Wuri','Bhinneka Tunggal Ika','Garuda','Merdeka Belajar'],1,'Berbeda-beda tetapi tetap satu.'],
+[3,6,'Musyawarah bertujuan mencapai ....',['Kemenangan pribadi','Kesepakatan bersama','Perpecahan','Persaingan'],1,'Musyawarah mencari kesepakatan.'],
+[3,6,'Hak anak di sekolah adalah ....',['Merusak fasilitas','Mendapat pendidikan','Mengganggu teman','Melanggar aturan'],1,'Anak berhak mendapatkan pendidikan.'],
+[4,5,'What is the English word for buku?',['Pencil','Book','Table','Chair'],1,'Book berarti buku.'],
+[4,5,'Choose the morning greeting.',['Good night','Good evening','Good morning','Good bye'],2,'Good morning untuk pagi hari.'],
+[4,5,'Eyes means ....',['Telinga','Hidung','Mata','Tangan'],2,'Eyes berarti mata.'],
+[4,5,'Plural form of child is ....',['Childs','Children','Childes','Childrens'],1,'Children adalah bentuk jamak child.'],
+[4,6,'She ... a beautiful cat.',['have','has','are','am'],1,'She menggunakan has.'],
+[4,6,'Opposite of expensive is ....',['Cheap','Big','Beautiful','Long'],0,'Cheap berarti murah.']
+];
+
+let deck=[],answers=[],index=0,name='',grade=5;
+let records=[];
+try{records=JSON.parse(localStorage.getItem('ccj56')||'[]')}catch(e){records=[]}
+
+function show(id){
+ ['home','rules','game','result','rankPage'].forEach(x=>
+ document.getElementById(x).classList.toggle('hidden',x!==id));
+}
+function score(){
+ return answers.reduce((n,a,i)=>n+(a===deck[i][4]?10:0),0);
+}
+function correct(){
+ return answers.reduce((n,a,i)=>n+(a===deck[i][4]?1:0),0);
+}
+function start(){
+ name=document.getElementById('name').value.trim();
+ if(!name){alert('Masukkan nama peserta!');return}
+ grade=+document.getElementById('grade').value;
+ deck=data.map((q,i)=>({...q,id:i})).sort(()=>Math.random()-.5);
+ answers=Array(30).fill(null);index=0;
+ show('game');render();
+}
+function render(){
+ let q=deck[index];
+ document.getElementById('subject').textContent=subjects[q[0]];
+ document.getElementById('category').textContent=subjects[q[0]]+' • KELAS '+q[1];
+ document.getElementById('number').textContent='SOAL '+(index+1)+' / 30';
+ document.getElementById('question').textContent=q[2];
+ document.getElementById('score').textContent=score();
+ document.getElementById('correct').textContent=correct();
+ document.getElementById('classDisplay').textContent=grade;
+ document.getElementById('progress').style.width=((index+1)/30*100)+'%';
+ document.getElementById('prev').disabled=index===0;
+ document.getElementById('next').textContent=index===29?'SELESAI 🏆':'SELANJUTNYA ➜';
+ let options=document.getElementById('options');options.innerHTML='';
+ q[3].forEach((o,i)=>{
+  let b=document.createElement('button');
+  b.className='option'+(answers[index]===i?' selected':'');
+  b.textContent=String.fromCharCode(65+i)+'. '+o;
+  b.onclick=()=>{answers[index]=i;render()};
+  options.appendChild(b);
+ });
+ let fb=document.getElementById('feedback');
+ if(answers[index]!==null){
+  let ok=answers[index]===q[4];
+  fb.className='feedback';
+  fb.style.background=ok?'#dcfce7':'#fee2e2';
+  fb.textContent=(ok?'✓ Benar! +10 poin. ':'✗ Belum tepat. ')+q[5];
+ }else fb.className='feedback hidden';
+
+ let nums=document.getElementById('numbers');nums.innerHTML='';
+ deck.forEach((_,i)=>{
+  let b=document.createElement('button');
+  b.className='num'+(answers[i]!==null?' done':'')+(i===index?' current':'');
+  b.textContent=i+1;b.onclick=()=>{index=i;render()};
+  nums.appendChild(b);
+ });
+}
+function previous(){if(index>0){index--;render()}}
+function next(){
+ if(index<29){index++;render();return}
+ if(answers.some(a=>a===null)){
+  index=answers.findIndex(a=>a===null);render();
+  alert('Masih ada soal yang belum dijawab.');return;
+ }
+ finish();
+}
+function finish(){
+ show('result');
+ let n=correct(),s=score();
+ document.getElementById('resultName').textContent=name+' • Kelas '+grade;
+ document.getElementById('finalScore').textContent=s;
+ document.getElementById('finalCorrect').textContent=n;
+ document.getElementById('finalWrong').textContent=30-n;
+ document.getElementById('percent').textContent=Math.round(n/30*100)+'%';
+ document.getElementById('results').innerHTML='';
+ subjects.forEach((sub,j)=>{
+  let c=deck.reduce((v,q,i)=>v+(q[0]===j&&answers[i]===q[4]?1:0),0);
+  let p=document.createElement('p');
+  p.textContent=sub+': '+c+'/6 benar';
+  document.getElementById('results').appendChild(p);
+ });
+ records.push({name,grade,score:s,correct:n});
+ records.sort((a,b)=>b.score-a.score||b.correct-a.correct);
+ records=records.slice(0,100);
+ try{localStorage.setItem('ccj56',JSON.stringify(records))}catch(e){}
+}
+function ranking(){
+ show('rankPage');
+ let box=document.getElementById('rankList');box.innerHTML='';
+ if(!records.length){box.textContent='Belum ada peserta.';return}
+ records.slice(0,20).forEach((r,i)=>{
+  let row=document.createElement('div');row.className='rank';
+  let nm=document.createElement('b');nm.textContent=['🥇 ','🥈 ','🥉 '][i]||((i+1)+'. ');nm.textContent+=r.name+' (Kelas '+r.grade+')';
+  let sc=document.createElement('b');sc.textContent=r.score+' poin';
+  row.append(nm,sc);box.appendChild(row);
+ });
+}
+</script>
+</body>
+</html>
